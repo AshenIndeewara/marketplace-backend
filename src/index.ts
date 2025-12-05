@@ -7,8 +7,6 @@ import itemRoutes from "./routes/item"
 import sellerRoutes from "./routes/seller"
 import adminRoutes from "./routes/admin"
 import { authenticate } from "./middleware/auth"
-import { swaggerSpec } from './config/swagger';
-import swaggerUi from 'swagger-ui-express';
 
 dotenv.config()
 
@@ -22,18 +20,15 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://fontend-blog.vercel.app"],
+      "https://fontend-blog.vercel.app",
+      "http://localhost:8080"],
     methods: ["GET", "POST", "PUT", "DELETE"] // optional
   })
 )
 
-
-
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 app.use("/api/v1/auth", authRoutes)
 
-app.use("/api/v1/item", authenticate, itemRoutes)
+app.use("/api/v1/item", itemRoutes)
 
 app.use("/api/v1/seller", authenticate, sellerRoutes)
 

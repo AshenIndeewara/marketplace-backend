@@ -122,6 +122,19 @@ export enum AgricultureSubCategory {
   OTHER_AGRICULTURE = "Other Agriculture"
 }
 
+export const allCategoriesWithSubCategories = {
+  VEHICLES: Object.values(VehicleSubCategory),
+  PROPERTY: Object.values(PropertySubCategory),
+  ELECTRONICS: Object.values(ElectronicsSubCategory),
+  HOME_GARDEN: Object.values(HomeGardenSubCategory),
+  FASHION_BEAUTY: Object.values(FashionBeautySubCategory),
+  ANIMALS: Object.values(AnimalsSubCategory),
+  HOBBY_SPORT_KIDS: Object.values(HobbySportKidsSubCategory),
+  BUSINESS_INDUSTRY: Object.values(BusinessIndustrySubCategory),
+  EDUCATION: Object.values(EducationSubCategory),
+  AGRICULTURE: Object.values(AgricultureSubCategory)
+}
+
 export interface ICategory extends Document {
   _id: mongoose.Types.ObjectId
   name: CategoryType

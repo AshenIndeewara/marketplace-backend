@@ -3,14 +3,15 @@ import { AUthRequest } from "../middleware/auth"
 import cloudinary from "../config/cloudinary"
 import { Item, ItemStatus } from "../models/item.model"
 import { log } from "console"
+import { allCategoriesWithSubCategories } from "../models/category.model"
 
 export const createItem = async (req: AUthRequest, res: Response) => {
   try {
-    const { 
-      itemName, 
-      itemPrice, 
-      itemDescription, 
-      itemCategory, 
+    const {
+      itemName,
+      itemPrice,
+      itemDescription,
+      itemCategory,
       itemSubCategory,
       location,
       condition
@@ -81,10 +82,12 @@ export const getAllItems = async (req: AUthRequest, res: Response) => {
 
     const { category, subCategory, status, minPrice, maxPrice, condition } = req.query
     log(req.query)
+    log(req.user.roles) //[ 'ADMIN' ]
     // Build filter object
     const filter: any = {}
     // if only admin can see all items including pending and rejected
-    if (req.user.role !== "ADMIN") {
+    if (!req.user.roles.includes("ADMIN")) {
+      console.log("User role:", req.user.roles)
       filter.isApproved = true
       filter.status = ItemStatus.APPROVED
     }
@@ -92,13 +95,13 @@ export const getAllItems = async (req: AUthRequest, res: Response) => {
     if (subCategory) filter.itemSubCategory = subCategory
     if (status) filter.status = status
     if (condition) filter.condition = condition
-    
+
     if (minPrice || maxPrice) {
       filter.itemPrice = {}
       if (minPrice) filter.itemPrice.$gte = Number(minPrice)
       if (maxPrice) filter.itemPrice.$lte = Number(maxPrice)
     }
-  
+
     const items = await Item.find(filter)
       .populate("sellerId", "firstname lastname phone email")
       .sort({ createdAt: -1 })
@@ -130,12 +133,12 @@ export const getItemsByCategory = async (req: AUthRequest, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10
     const skip = (page - 1) * limit
 
-    const filter: any = { 
+    const filter: any = {
       itemCategory: category,
       status: ItemStatus.APPROVED,
       isApproved: true
     }
-    
+
     if (subCategory) {
       filter.itemSubCategory = subCategory
     }
@@ -166,10 +169,10 @@ export const getItemsByCategory = async (req: AUthRequest, res: Response) => {
 export const editItem = async (req: AUthRequest, res: Response) => {
   try {
     const itemID = req.params.id
-    const { 
-      itemName, 
-      itemPrice, 
-      itemDescription, 
+    const {
+      itemName,
+      itemPrice,
+      itemDescription,
       itemCategory,
       itemSubCategory,
       location,
@@ -189,7 +192,7 @@ export const editItem = async (req: AUthRequest, res: Response) => {
 
     // Handle image updates
     let imageURLs: string[] = []
-    
+
     // Keep existing images if provided
     if (existingImages && Array.isArray(existingImages)) {
       imageURLs = existingImages
@@ -300,7 +303,7 @@ export const getItemById = async (req: AUthRequest, res: Response) => {
 
 export const searchItems = async (req: AUthRequest, res: Response) => {
   try {
-    const search = req.query.search as string
+    const search = req.query.q as string
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 10
     const skip = (page - 1) * limit
@@ -366,12 +369,12 @@ export const searchItems = async (req: AUthRequest, res: Response) => {
 export const approveItem = async (req: AUthRequest, res: Response) => {
   try {
     const itemID = req.params.id
-    
+
     const updatedItem = await Item.findByIdAndUpdate(
       itemID,
-      { 
-        isApproved: true, 
-        status: ItemStatus.APPROVED 
+      {
+        isApproved: true,
+        status: ItemStatus.APPROVED
       },
       { new: true }
     )
@@ -393,12 +396,12 @@ export const approveItem = async (req: AUthRequest, res: Response) => {
 export const rejectItem = async (req: AUthRequest, res: Response) => {
   try {
     const itemID = req.params.id
-    
+
     const updatedItem = await Item.findByIdAndUpdate(
       itemID,
-      { 
-        isApproved: false, 
-        status: ItemStatus.REJECTED 
+      {
+        isApproved: false,
+        status: ItemStatus.REJECTED
       },
       { new: true }
     )
@@ -443,5 +446,18 @@ export const markAsSold = async (req: AUthRequest, res: Response) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: "Failed to mark item as sold" })
+  }
+}
+// ge categories and subcategories from allCategoriesWithSubCategories
+export const getAllCategories = async (req: AUthRequest, res: Response) => {
+  console.log(allCategoriesWithSubCategories)
+  try {
+    res.status(200).json({
+      message: "Categories fetched successfully",
+      data: allCategoriesWithSubCategories
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: "Failed to fetch categories" })
   }
 }
