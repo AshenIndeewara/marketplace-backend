@@ -15,7 +15,6 @@ router.post("/add",
 )
 
 router.get("/all",
-    authenticate,
     getAllItems
 )
 

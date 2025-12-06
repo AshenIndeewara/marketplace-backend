@@ -82,15 +82,9 @@ export const getAllItems = async (req: AUthRequest, res: Response) => {
 
     const { category, subCategory, status, minPrice, maxPrice, condition } = req.query
     log(req.query)
-    log(req.user.roles) //[ 'ADMIN' ]
-    // Build filter object
     const filter: any = {}
-    // if only admin can see all items including pending and rejected
-    if (!req.user.roles.includes("ADMIN")) {
-      console.log("User role:", req.user.roles)
-      filter.isApproved = true
-      filter.status = ItemStatus.APPROVED
-    }
+    filter.isApproved = true
+    filter.status = ItemStatus.APPROVED
     if (category) filter.itemCategory = category
     if (subCategory) filter.itemSubCategory = subCategory
     if (status) filter.status = status
