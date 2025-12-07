@@ -15,6 +15,7 @@ export interface IUSER extends Document {
   email: string
   password: string
   roles: Role[]
+  favoriteItems?: mongoose.Types.ObjectId[]
 }
 
 const userSchema = new Schema<IUSER>({
@@ -24,7 +25,8 @@ const userSchema = new Schema<IUSER>({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   address: { type: String },
-  roles: { type: [String], enum: Object.values(Role), default: [Role.SELLER] }
+  roles: { type: [String], enum: Object.values(Role), default: [Role.SELLER] },
+  favoriteItems: [{ type: Schema.Types.ObjectId, ref: "Item" }]
 })
 
 export const User = mongoose.model<IUSER>("User", userSchema)
