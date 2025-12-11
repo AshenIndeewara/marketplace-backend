@@ -34,6 +34,7 @@ export interface IItem extends Document {
   isApproved: boolean
   status: ItemStatus
   views: number
+  embeddings?: number[]
   createdAt: Date
   updatedAt: Date
 }
@@ -71,7 +72,12 @@ const itemSchema = new Schema<IItem>(
       enum: Object.values(ItemStatus), 
       default: ItemStatus.PENDING 
     },
-    views: { type: Number, default: 0 }
+    views: { type: Number, default: 0 },
+    embeddings: {
+      type: [Number],
+      default: [],
+      index: "vector"
+    }
   },
   {
     timestamps: true

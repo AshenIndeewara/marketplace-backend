@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth"
 import itemRoutes from "./routes/item"
 import sellerRoutes from "./routes/seller"
 import adminRoutes from "./routes/admin"
+import aiRoutes from "./routes/ai"
 import { authenticate } from "./middleware/auth"
 
 dotenv.config()
@@ -33,6 +34,8 @@ app.use("/api/v1/item", itemRoutes)
 app.use("/api/v1/seller", authenticate, sellerRoutes)
 
 app.use("/api/v1/admin", authenticate, adminRoutes)
+
+app.use("/api/v1/ask", aiRoutes)
 
 
 
