@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://fontend-blog.vercel.app",
+      "https://marketplace-vert-nine.vercel.app",
       "http://localhost:8080"],
     methods: ["GET", "POST", "PUT", "DELETE"] // optional
   })
