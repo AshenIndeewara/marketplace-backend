@@ -76,3 +76,22 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ message: "Refresh token required" });
+
+    const payload: any = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+
+    const user = await User.findById(payload.sub) as IUSER | null;
+    if (!user) return res.status(403).json({ message: "Invalid refresh token" });
+
+    const accessToken = signAccessToken(user);
+
+    res.status(200).json({ accessToken });
+  } catch (err) {
+    console.error(err);
+    res.status(403).json({ message: "Invalid or expired refresh token" });
+  }
+};
